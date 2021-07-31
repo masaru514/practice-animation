@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    body {
+      margin: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100vw;
+      height: 100vh;
+      background: black;
+    }
+  </style>
+  <title>Document</title>
+</head>
+<body>
+  <canvas></canvas>
+  <script src='perlin.js'></script>
+  <script>
+  const canvas = document.querySelector("canvas")
+  const context = canvas.getContext("2d")
+
+  let stageW = 800;
+  let stageH = 600;
+
+  tick();
+  resize();
+  window.addEventListener('resize', resize);
+
+    function draw(time) {
+      // 画面をリセット
+      context.clearRect(0, 0, stageW, stageH);
+      context.lineWidth = 1;
+
+      const amplitude = stageH / 2; // 振幅（縦幅)の大きさ
+      const lineNum = 150; // ラインの数
+      const segmentNum = 150; // 分割数
+
+      [...new Array(lineNum).keys()].forEach(j => {
+        const coefficient = 50 + j;
+
+        context.beginPath();
+        context.strokeStyle = `white`;
+
+        [...new Array(segmentNum).keys()].forEach(i => {
+
+          const x = i / (segmentNum - 1) * stageW;
+
+          const px = i / coefficient;
+          const py = (j / 50 + time);
+          const y = amplitude * noise.perlin2(px, py) + stageH / 2;
+
+          if (i === 0) {
+            context.moveTo(x, y);
+          } else {
+            context.lineTo(x, y);
+          }
+        });
+        context.stroke();
+      });
+    }
+
+  function tick() {
+    requestAnimationFrame(tick)
+      const time = Date.now() / 4000;
+      draw(time);
+  }
+
+  function resize() {
+    stageW = innerWidth * devicePixelRatio;
+    stageH = innerHeight * devicePixelRatio;
+
+    canvas.width = stageW;
+    canvas.height = stageH;
+  }
+
+</script>
+</body>
+</html>
